@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071421" />
+    <meta name="description" content="작은 우주비행사 버디와 함께 별 사이를 날아보세요." />
+    <title>Flappy Buddy</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Flappy Buddy 홈">
+          <span class="brand-mark" aria-hidden="true">B</span>
+          <span>FLAPPY BUDDY</span>
+        </a>
+        <div class="best-score" aria-label="최고 점수">
+          <span>BEST</span>
+          <strong id="bestScore">00</strong>
+        </div>
+      </header>
+
+      <section class="game-card" aria-label="Flappy Buddy 게임">
+        <canvas id="gameCanvas" width="960" height="600" aria-label="게임 화면"></canvas>
+
+        <div class="score-display" id="scoreDisplay" aria-live="polite">0</div>
+
+        <div class="game-overlay" id="startOverlay">
+          <div class="eyebrow">MISSION 01</div>
+          <h1>READY TO<br /><em>FLY?</em></h1>
+          <p>틈 사이를 통과하고 버디의<br />우주 비행 기록을 세워보세요.</p>
+          <button class="primary-button" id="startButton" type="button">
+            <span>START MISSION</span>
+            <span aria-hidden="true">↗</span>
+          </button>
+          <div class="controls-hint">
+            <span><kbd>SPACE</kbd> 날기</span>
+            <span><kbd>R</kbd> 다시 시작</span>
+          </div>
+        </div>
+
+        <div class="game-overlay game-over" id="gameOverOverlay" hidden>
+          <div class="eyebrow">MISSION REPORT</div>
+          <h2>FLIGHT<br /><em>COMPLETE</em></h2>
+          <div class="result-grid">
+            <div><span>SCORE</span><strong id="finalScore">00</strong></div>
+            <div><span>BEST</span><strong id="finalBest">00</strong></div>
+          </div>
+          <button class="primary-button" id="restartButton" type="button">
+            <span>TRY AGAIN</span>
+            <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+
+        <div class="status-pill" aria-hidden="true">
+          <span class="status-dot"></span>
+          SYSTEMS ONLINE
+        </div>
+      </section>
+
+      <footer>
+        <p>CLICK · TAP · SPACE TO FLY</p>
+        <p>EARTH ORBIT / 2026</p>
+      </footer>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
