@@ -5,6 +5,9 @@ const gameOverOverlay = document.querySelector("#gameOverOverlay");
 const startButton = document.querySelector("#startButton");
 const restartButton = document.querySelector("#restartButton");
 const scoreDisplay = document.querySelector("#scoreDisplay");
+const livesHud = document.querySelector("#livesHud");
+const livesDisplay = document.querySelector("#livesDisplay");
+const lifeStatusLabel = document.querySelector("#lifeStatusLabel");
 const bestScoreEl = document.querySelector("#bestScore");
 const finalScoreEl = document.querySelector("#finalScore");
 const finalBestEl = document.querySelector("#finalBest");
@@ -12,7 +15,8 @@ const finalBestEl = document.querySelector("#finalBest");
 const STATE = Object.freeze({ READY: "ready", PLAYING: "playing", OVER: "over" });
 const world = {
   width: 960, height: 600, dpr: 1, state: STATE.READY, time: 0, lastTime: 0,
-  score: 0, best: Number(localStorage.getItem("flappy-buddy-best") || 0), shake: 0, flash: 0,
+  score: 0, lives: 3, invulnerable: 0,
+  best: Number(localStorage.getItem("flappy-buddy-best") || 0), shake: 0, flash: 0,
   pipes: [], particles: [],
   stars: Array.from({ length: 86 }, (_, index) => ({
     x: ((index * 137.53) % 100) / 100,
@@ -39,12 +43,17 @@ function resizeCanvas() {
 
 function resetGame() {
   world.score = 0;
+  world.lives = 3;
+  world.invulnerable = 0;
   world.pipes = [];
   world.particles = [];
   world.shake = 0;
   world.flash = 0;
   Object.assign(world.buddy, { x: world.width * 0.28, y: world.height * 0.46, vy: 0, rotation: 0 });
   scoreDisplay.textContent = "0";
+  livesDisplay.textContent = "03";
+  lifeStatusLabel.textContent = "LIVES";
+  livesHud.classList.remove("invulnerable");
 }
 
 function startGame() {
@@ -53,7 +62,25 @@ function startGame() {
   startOverlay.hidden = true;
   gameOverOverlay.hidden = true;
   scoreDisplay.classList.add("visible");
+  livesHud.classList.add("visible");
   flap();
+}
+
+function takeHit() {
+  if (world.state !== STATE.PLAYING || world.invulnerable > 0) return;
+  world.lives -= 1;
+  livesDisplay.textContent = String(world.lives).padStart(2, "0");
+  world.shake = 8;
+  world.flash = 0.7;
+  burst(world.buddy.x, world.buddy.y, 12, "#ff6b36");
+  if (world.lives === 0) {
+    endGame();
+    return;
+  }
+  world.invulnerable = 1.8;
+  lifeStatusLabel.textContent = "SHIELD";
+  livesHud.classList.add("invulnerable");
+  playTone(220, 0.12, "sawtooth", 0.03);
 }
 
 function endGame() {
@@ -68,7 +95,9 @@ function endGame() {
   finalBestEl.textContent = String(world.best).padStart(2, "0");
   playTone(110, 0.2, "sawtooth", 0.035);
   window.setTimeout(() => {
+    if (world.state !== STATE.OVER) return;
     scoreDisplay.classList.remove("visible");
+    livesHud.classList.remove("visible");
     gameOverOverlay.hidden = false;
     restartButton.focus({ preventScroll: true });
   }, 420);
@@ -126,6 +155,13 @@ function update(dt) {
   world.time += dt;
   world.shake = Math.max(0, world.shake - dt * 34);
   world.flash = Math.max(0, world.flash - dt * 3.5);
+  if (world.invulnerable > 0) {
+    world.invulnerable = Math.max(0, world.invulnerable - dt);
+    if (world.invulnerable === 0) {
+      lifeStatusLabel.textContent = "LIVES";
+      livesHud.classList.remove("invulnerable");
+    }
+  }
   world.particles.forEach((particle) => {
     particle.x += particle.vx * dt;
     particle.y += particle.vy * dt;
@@ -164,10 +200,20 @@ function update(dt) {
     }
     const hitX = buddy.x + buddy.radius * 0.72 > pipe.x && buddy.x - buddy.radius * 0.72 < pipe.x + pipe.width;
     const hitY = buddy.y - buddy.radius * 0.72 < pipe.center - pipe.gap / 2 || buddy.y + buddy.radius * 0.72 > pipe.center + pipe.gap / 2;
-    if (hitX && hitY) endGame();
+    if (hitX && hitY) takeHit();
   }
   world.pipes = world.pipes.filter((pipe) => pipe.x + pipe.width > -20);
-  if (buddy.y - buddy.radius < 0 || buddy.y + buddy.radius > world.height - 35) endGame();
+  const ceiling = buddy.radius + 8;
+  const floor = world.height - 35 - buddy.radius - 8;
+  if (buddy.y < ceiling) {
+    buddy.y = ceiling;
+    buddy.vy = 160;
+    takeHit();
+  } else if (buddy.y > floor) {
+    buddy.y = floor;
+    buddy.vy = -Math.min(280, world.height * 0.45);
+    takeHit();
+  }
 }
 
 function drawBackdrop() {
@@ -234,6 +280,10 @@ function drawPipe(pipe) {
 function drawBuddy() {
   const buddy = world.buddy;
   ctx.save();
+  if (world.invulnerable > 0) {
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    ctx.globalAlpha = reducedMotion ? 0.55 : Math.floor(world.time * 8) % 2 === 0 ? 1 : 0.22;
+  }
   ctx.translate(buddy.x, buddy.y);
   ctx.rotate(buddy.rotation);
   ctx.fillStyle = "rgba(2, 9, 14, .28)";

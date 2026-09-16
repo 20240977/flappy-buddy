@@ -108,6 +108,29 @@ canvas {
 
 .score-display.visible { opacity: 1; }
 
+.lives-display {
+  position: absolute;
+  z-index: 3;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(7, 20, 33, 0.76);
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 180ms ease, border-color 180ms ease;
+}
+
+.lives-display.visible { opacity: 1; }
+.lives-display.invulnerable { border-color: var(--acid); }
+.lives-display span { color: var(--muted); font-size: 0.875rem; letter-spacing: 0.08em; }
+.lives-display.invulnerable span { color: var(--acid); }
+.lives-display strong { font: 1.5rem/1 "Archivo Black", sans-serif; }
+
 .game-overlay {
   position: absolute;
   z-index: 4;
@@ -198,6 +221,9 @@ footer p { margin: 0; }
   .app-shell { width: min(100% - 20px, 560px); padding-top: 14px; }
   .game-card, canvas { min-height: 650px; }
   .game-card { border-radius: 20px; }
+  .lives-display { top: 20px; right: 20px; gap: 8px; padding: 7px 9px; }
+  .lives-display span { font-size: 0.75rem; }
+  .lives-display strong { font-size: 1.25rem; }
   .game-overlay { justify-content: flex-end; padding: 34px 26px 68px; background: linear-gradient(0deg, rgba(7, 20, 33, 0.96) 0%, rgba(7, 20, 33, 0.45) 65%, transparent 100%); }
   h1 { font-size: clamp(3.4rem, 18vw, 5.6rem); }
   .game-overlay > p { margin: 18px 0; font-size: 0.85rem; }
