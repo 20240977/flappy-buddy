@@ -4,9 +4,9 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "predev:cloudflare": "npm run build",
-    "dev:cloudflare": "wrangler dev",
+    "dev:cloudflare": "wrangler pages dev dist",
     "predeploy:cloudflare": "npm run build",
-    "deploy:cloudflare": "wrangler deploy"
+    "deploy:cloudflare": "wrangler pages deploy dist --project-name flappy-buddy --branch main"
   },
   "devDependencies": {
     "wrangler": "^4.132.0"
