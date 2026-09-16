@@ -109,7 +109,10 @@ function playTone(frequency, duration, type = "sine", volume = 0.03) {
 }
 
 function spawnPipe() {
-  const gap = Math.max(142, Math.min(190, world.height * 0.27));
+  const minGap = Math.max(120, Math.min(145, world.height * 0.22));
+  const maxGap = Math.min(220, world.height * 0.34);
+  const difficulty = Math.min(world.score * 2, 24);
+  const gap = Math.max(112, minGap + Math.random() * (maxGap - minGap) - difficulty);
   const margin = Math.max(92, world.height * 0.18);
   const center = margin + gap / 2 + Math.random() * (world.height - 36 - margin * 2 - gap);
   world.pipes.push({
