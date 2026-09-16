@@ -1,0 +1,14 @@
+{
+  "name": "flappy-buddy",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "predev:cloudflare": "npm run build",
+    "dev:cloudflare": "wrangler dev",
+    "predeploy:cloudflare": "npm run build",
+    "deploy:cloudflare": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.132.0"
+  }
+}
