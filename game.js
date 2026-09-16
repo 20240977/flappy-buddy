@@ -197,6 +197,10 @@ function update(dt) {
       scoreDisplay.textContent = String(world.score);
       burst(buddy.x, buddy.y, 10, "#f4f6f1");
       playTone(660, 0.08, "sine", 0.04);
+      if (world.score === 5) {
+        endGame();
+        return;
+      }
     }
     const hitX = buddy.x + buddy.radius * 0.72 > pipe.x && buddy.x - buddy.radius * 0.72 < pipe.x + pipe.width;
     const hitY = buddy.y - buddy.radius * 0.72 < pipe.center - pipe.gap / 2 || buddy.y + buddy.radius * 0.72 > pipe.center + pipe.gap / 2;
